@@ -9,8 +9,6 @@ psuedo format rules:
 '[^\n]+'                      - description
 */
 
-use std::prelude::v1::Vec;
-
 fn is_completed(input: String) -> (bool, String) {
     let prefix = input.chars().take(2).collect::<String>();
 
@@ -28,7 +26,7 @@ pub struct TodoItem {
 
 impl TodoItem {
     pub fn parse(src: &str) -> Self {
-        let mut buffer = String::from(src);
+        let buffer = String::from(src);
         let (completed, buffer) = is_completed(buffer);
 
         TodoItem {
@@ -63,5 +61,27 @@ mod tests {
         const SAMPLE: &str = "x start writing txdo";
 
         assert!(TodoItem::parse(SAMPLE).completed);
+    }
+
+    #[test]
+    fn correctly_parses_finished_todo_description() {
+        const SAMPLE: &str = "x start writing txdo";
+        const EXPECTED_DESCRIPTION: &str = "start writing txdo";
+
+        assert_eq!(TodoItem::parse(SAMPLE).description, EXPECTED_DESCRIPTION);
+    }
+
+    #[test]
+    fn correctly_ignores_x_following_space_for_finished() {
+        const SAMPLE: &str = " x marks the spot";
+
+        assert!(!TodoItem::parse(SAMPLE).completed);
+    }
+
+    #[test]
+    fn correctly_ignores_x_without_trailing_space_for_finished() {
+        const SAMPLE: &str = "xylophone practice";
+
+        assert!(!TodoItem::parse(SAMPLE).completed);
     }
 }
