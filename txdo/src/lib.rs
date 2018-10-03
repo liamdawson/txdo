@@ -11,6 +11,7 @@ psuedo format rules:
 
 pub struct TodoItem<'a> {
     raw: &'a str,
+    pub completed: bool,
     pub description: &'a str,
 }
 
@@ -18,6 +19,7 @@ impl<'a> TodoItem<'a> {
     pub fn parse(src: &'a str) -> Self {
         TodoItem {
             raw: src,
+            completed: false,
             description: src,
         }
     }
@@ -28,10 +30,18 @@ mod tests {
     use super::*;
 
     #[test]
-    fn correctly_parses_very_basic_todo() {
-        const SAMPLE: &'static str = "water cat";
-        const EXPECTED_DESCRIPTION: &'static str = SAMPLE;
+    fn correctly_parses_very_basic_todo_description() {
+        const SAMPLE: &str = "water cat";
+        const EXPECTED_DESCRIPTION: &str = SAMPLE;
 
         assert_eq!(EXPECTED_DESCRIPTION, TodoItem::parse(SAMPLE).description);
+    }
+
+    #[test]
+    fn correctly_parses_basic_todo_as_unfinished() {
+        // https://www.youtube.com/watch?v=XqzdHTpKJb
+        const SAMPLE: &str = "hang sloths up to dry";
+
+        assert!(!TodoItem::parse(SAMPLE).completed);
     }
 }
