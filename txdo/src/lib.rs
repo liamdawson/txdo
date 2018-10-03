@@ -9,18 +9,31 @@ psuedo format rules:
 '[^\n]+'                      - description
 */
 
-pub struct TodoItem<'a> {
-    raw: &'a str,
-    pub completed: bool,
-    pub description: &'a str,
+use std::prelude::v1::Vec;
+
+fn is_completed(input: String) -> (bool, String) {
+    let prefix = input.chars().take(2).collect::<String>();
+
+    if prefix == "x " {
+        (true, input.chars().skip(2).collect())
+    } else {
+        (false, input)
+    }
 }
 
-impl<'a> TodoItem<'a> {
-    pub fn parse(src: &'a str) -> Self {
+pub struct TodoItem {
+    pub completed: bool,
+    pub description: String,
+}
+
+impl TodoItem {
+    pub fn parse(src: &str) -> Self {
+        let mut buffer = String::from(src);
+        let (completed, buffer) = is_completed(buffer);
+
         TodoItem {
-            raw: src,
-            completed: false,
-            description: src,
+            completed,
+            description: buffer,
         }
     }
 }
@@ -43,5 +56,12 @@ mod tests {
         const SAMPLE: &str = "hang sloths up to dry";
 
         assert!(!TodoItem::parse(SAMPLE).completed);
+    }
+
+    #[test]
+    fn correctly_parses_basic_todo_as_finished() {
+        const SAMPLE: &str = "x start writing txdo";
+
+        assert!(TodoItem::parse(SAMPLE).completed);
     }
 }
