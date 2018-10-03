@@ -1,0 +1,11 @@
+[[package]]
+name = "txdo"
+version = "0.1.0"
+
+[[package]]
+name = "txdo-cli"
+version = "0.1.0"
+dependencies = [
+ "txdo 0.1.0",
+]
+
