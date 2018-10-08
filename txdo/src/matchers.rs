@@ -1,7 +1,5 @@
 pub fn parse_completed(buffer: &[u8]) -> (bool, &[u8]) {
-    if buffer.len() > 1
-        && buffer[0] == ('x' as u8)
-        && buffer[1] == (' ' as u8) {
+    if buffer.len() > 1 && buffer[0] == ('x' as u8) && buffer[1] == (' ' as u8) {
         (true, &buffer[2..])
     } else {
         (false, &buffer)
@@ -13,7 +11,8 @@ pub fn parse_priority(buffer: &[u8]) -> (Option<u8>, &[u8]) {
         && buffer[0] == ('(' as u8)
         && buffer[2] == (')' as u8)
         && buffer[3] == (' ' as u8)
-        && buffer[1].is_ascii_uppercase() {
+        && buffer[1].is_ascii_uppercase()
+    {
         (Some(buffer[1]), &buffer[4..])
     } else {
         (None, &buffer)
@@ -37,7 +36,8 @@ pub fn parse_date(buffer: &[u8]) -> (Option<&[u8]>, &[u8]) {
         // TODO: better validation (e.g. reject 9999-99-99)
 
         if (0..DATE_LENGTH).all(|ind| valid_character(buffer[ind], ind))
-            && buffer[DATE_LENGTH] == (' ' as u8) {
+            && buffer[DATE_LENGTH] == (' ' as u8)
+        {
             return (Some(&buffer[0..DATE_LENGTH]), &buffer[DATE_LENGTH + 1..]);
         }
     }
@@ -52,7 +52,9 @@ mod tests {
     use std::str;
 
     macro_rules! input {
-        ($val:expr) => { $val.as_bytes() }
+        ($val:expr) => {
+            $val.as_bytes()
+        };
     }
 
     fn coerce_to_string(bytes: &[u8]) -> &str {
@@ -89,20 +91,38 @@ mod tests {
         // TODO: fix and test non-date formats
         //       e.g. 2018-99-99
 
-        assert_eq!(parse_date(input!("2018-01-01 ")).0.map(coerce_to_string), Some("2018-01-01"));
+        assert_eq!(
+            parse_date(input!("2018-01-01 ")).0.map(coerce_to_string),
+            Some("2018-01-01")
+        );
 
         // this should pass
         // assert_eq!(parse_date(input!("2018-99-99 ")).0.map(coerce_to_string), None);
 
         // dates should be followed by spaces
-        assert_eq!(parse_date(input!("2018-01-01")).0.map(coerce_to_string), None);
+        assert_eq!(
+            parse_date(input!("2018-01-01")).0.map(coerce_to_string),
+            None
+        );
 
         // dates must use four/two/two-digit components
-        assert_eq!(parse_date(input!("18-01-01 ")).0.map(coerce_to_string), None);
-        assert_eq!(parse_date(input!("2018-1-01 ")).0.map(coerce_to_string), None);
-        assert_eq!(parse_date(input!("2018-01-1 ")).0.map(coerce_to_string), None);
+        assert_eq!(
+            parse_date(input!("18-01-01 ")).0.map(coerce_to_string),
+            None
+        );
+        assert_eq!(
+            parse_date(input!("2018-1-01 ")).0.map(coerce_to_string),
+            None
+        );
+        assert_eq!(
+            parse_date(input!("2018-01-1 ")).0.map(coerce_to_string),
+            None
+        );
 
         // dates must use hyphens as separators
-        assert_eq!(parse_date(input!("2018_01_01 ")).0.map(coerce_to_string), None);
+        assert_eq!(
+            parse_date(input!("2018_01_01 ")).0.map(coerce_to_string),
+            None
+        );
     }
 }

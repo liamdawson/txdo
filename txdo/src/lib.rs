@@ -17,16 +17,19 @@ impl<'a> TodoItem<'a> {
         let (completed, buffer) = matchers::parse_completed(buffer);
         let (priority, buffer) = matchers::parse_priority(buffer);
         let (date1, buffer) = matchers::parse_date(buffer);
-        let (date2, buffer) = matchers::parse_date(buffer);
+        let (date2, buffer) = match completed {
+            true => matchers::parse_date(buffer),
+            false => (None, buffer),
+        };
 
         let completed_at = match completed {
             true => date1,
-            false => None
+            false => None,
         };
 
         let created_at = match completed {
             true => date2,
-            false => date1
+            false => date1,
         };
 
         let description = str::from_utf8(buffer).unwrap();
@@ -46,56 +49,39 @@ mod tests {
     use super::*;
 
     macro_rules! parse_sample {
-        ( $val:expr ) => { TodoItem::parse($val.as_bytes()) }
+        ( $val:expr ) => {
+            TodoItem::parse($val.as_bytes())
+        };
     }
 
     // start by testing descriptions, as they're a quick indicator that prefix
     // parsing is broken
 
     #[test]
-    fn extracts_description_from_basic_item() {
-        const SAMPLE: &str = "water cat";
+    fn correctly_handles_two_dates_when_not_completed() {
+        const DESCRIPTION: &str = "2018-12-31 water cat";
+        const SAMPLE: &str = "2018-01-01 2018-12-31 water cat";
+        let expected_date: &[u8] = "2018-01-01".as_bytes();
 
-        assert_eq!(parse_sample!(SAMPLE).description, SAMPLE);
-    }
-
-    #[test]
-    fn extracts_description_from_finished_item() {
-        const DESCRIPTION: &str = "hang sloths up to dry";
-        const SAMPLE: &str = "x hang sloths up to dry";
-
+        assert_eq!(parse_sample!(SAMPLE).created_at, Some(expected_date));
         assert_eq!(parse_sample!(SAMPLE).description, DESCRIPTION);
     }
 
     #[test]
-    fn extracts_description_from_item_with_priority() {
-        const DESCRIPTION: &str = "reticulate splines";
-        const SAMPLE: &str = "(A) reticulate splines";
+    fn correctly_handles_two_dates_when_completed() {
+        const DESCRIPTION: &str = "water cat";
+        const SAMPLE: &str = "x 2018-01-01 2018-12-31 water cat";
+        let expected_completed_date: &[u8] = "2018-01-01".as_bytes();
+        let expected_created_date: &[u8] = "2018-12-31".as_bytes();
 
-        assert_eq!(parse_sample!(SAMPLE).description, DESCRIPTION);
-    }
-
-    #[test]
-    fn extracts_description_from_item_with_creation_date() {
-        const DESCRIPTION: &str = "make new year's resolutions";
-        const SAMPLE: &str = "2019-01-01 make new year's resolutions";
-
-        assert_eq!(parse_sample!(SAMPLE).description, DESCRIPTION);
-    }
-
-    #[test]
-    fn extracts_description_from_item_with_completion_date() {
-        const DESCRIPTION: &str = "write a novel";
-        const SAMPLE: &str = "x 2018-11-30 write a novel";
-
-        assert_eq!(parse_sample!(SAMPLE).description, DESCRIPTION);
-    }
-
-    #[test]
-    fn extracts_description_from_item_with_completion_and_creation_date() {
-        const DESCRIPTION: &str = "reach 25 years old";
-        const SAMPLE: &str = "x 2025-01-01 2000-01-01 reach 25 years old";
-
+        assert_eq!(
+            parse_sample!(SAMPLE).created_at,
+            Some(expected_created_date)
+        );
+        assert_eq!(
+            parse_sample!(SAMPLE).completed_at,
+            Some(expected_completed_date)
+        );
         assert_eq!(parse_sample!(SAMPLE).description, DESCRIPTION);
     }
 }
