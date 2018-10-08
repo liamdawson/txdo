@@ -17,21 +17,9 @@ impl<'a> TodoItem<'a> {
         let (completed, buffer) = matchers::parse_completed(buffer);
         let (priority, buffer) = matchers::parse_priority(buffer);
         let (date1, buffer) = matchers::parse_date(buffer);
-        let (date2, buffer) = match completed {
-            true => matchers::parse_date(buffer),
-            false => (None, buffer),
-        };
-
-        let completed_at = match completed {
-            true => date1,
-            false => None,
-        };
-
-        let created_at = match completed {
-            true => date2,
-            false => date1,
-        };
-
+        let (date2, buffer) = if completed { matchers::parse_date(buffer) } else { (None, buffer) };
+        let completed_at = if completed { date1 } else { None };
+        let created_at = if completed { date2 } else { date1};
         let description = str::from_utf8(buffer).unwrap();
 
         TodoItem {
