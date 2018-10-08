@@ -1,5 +1,10 @@
-[workspace]
-members = [
-  "txdo",
-  "txdo-cli"
-]
+[package]
+name = "txdo"
+version = "0.1.0"
+authors = ["Liam Dawson <liam@ldaws.com>"]
+description = "Library for parsing todo.txt files"
+repository = "https://github.com/liamdawson/txdo"
+readme = "README.md"
+licence = "Apache-2.0/MIT"
+
+[dependencies]

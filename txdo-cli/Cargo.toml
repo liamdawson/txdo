@@ -1,7 +1,0 @@
-[package]
-name = "txdo-cli"
-version = "0.1.0"
-authors = ["Liam Dawson <liam@ldaws.com>"]
-
-[dependencies]
-txdo = { path = "../txdo" }

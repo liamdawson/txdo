@@ -11,7 +11,6 @@
       <sourceFolder url="file://$MODULE_DIR$/txdo-cli/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/txdo-cli/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/txdo-cli/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/txdo/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/txdo/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/txdo/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/txdo/benches" isTestSource="true" />
